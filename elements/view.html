@@ -1,0 +1,382 @@
+<link rel="import" href="optinomic-title/optinomic-title.html">
+<link rel="import" href="optinomic-pdfmake/optinomic-pdfmake.html">
+<link rel="import" href="optinomic-elements-helpers/optinomic-indication.html">
+<link rel="import" href="iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="iron-flex-layout/iron-flex-layout-classes.html">
+<link rel="import" href="iron-collapse/iron-collapse.html">
+<link rel="import" href="vaadin-grid/vaadin-grid.html">
+<link rel="import" href="vaadin-grid/vaadin-grid-sorter.html">
+<link rel="import" href="vaadin-grid/vaadin-grid-column-group.html">
+<dom-module id="optinomic-template">
+    <template>
+        <style include="shared-styles">
+         :host {
+            display: block;
+            padding: 6px;
+        }
+
+        vaadin-grid {
+            height: auto;
+        }
+
+        .full_grid {
+            height: 500px;
+            border-left-style: none;
+            border-right-style: none;
+            border-bottom-style: none;
+        }
+
+        .readme_container {
+            background-color: #FAFAFA;
+            border-style: solid;
+            border-color: #EEEEEE;
+            border-width: 1px;
+            border-radius: 3px;
+            padding: 24px;
+        }
+
+        .content_block {
+            margin-top: -48px;
+            margin-bottom: 48px;
+            border-top-color: #BDBDBD;
+            border-top-style: solid;
+            border-top-width: 1px;
+        }
+
+        .scroll_top {
+            text-align: right;
+            cursor: pointer;
+            margin-top: 24px;
+            margin-bottom: 0px !important;
+            padding-bottom: 0px !important;
+        }
+        </style>
+        <div id="top" class="layout horizontal flex">
+            <div class="flex">
+                <optinomic-title h1="[[_d.title]]" h2="[[_d.subtitle]]" h3="[[_d.small]]"></optinomic-title>
+            </div>
+            <div>
+                <template is="dom-if" if="[[_pdf_ready]]">
+                    <paper-icon-button class="indigo" on-tap="__toggle_print" icon="print"></paper-icon-button>
+                </template>
+            </div>
+        </div>
+        <template is="dom-if" if="[[_d.init_done]]">
+            <div id="main_content">
+                <div id="datenblatt">
+                    <p>Anzahl Einträge: [[_annotations.data.length]] | Datenstand: [[_annotations.date]]</p>
+                    
+
+                    <vaadin-grid class="full_grid" aria-label="Kantonsstatistik" items="[[_annotations.data]]" column-reordering-allowed="true">
+                        <vaadin-grid-column-group>
+                            <template class="header"><span class="body-1" stlye="color:#212121;font-weight:400;">ID</span></template>
+                            <vaadin-grid-column width="73px" flex-grow="0">
+                                <template class="header">
+                                    <vaadin-grid-sorter path="ID_PID">
+                                        <span class="body-1" stlye="color:#424242;font-weight:400;">PID</span>
+                                    </vaadin-grid-sorter>
+                                </template>
+                                <template>
+                                    <span draggable="true" class="body-1">[[item.ID_PID]]</span>
+                                </template>
+                            </vaadin-grid-column>
+                            <vaadin-grid-column width="50px" flex-grow="0">
+                                <template class="header">
+                                    <vaadin-grid-sorter path="ID_FID">
+                                        <span class="body-1" stlye="color:#424242;font-weight:400;">FID</span>
+                                    </vaadin-grid-sorter>
+                                </template>
+                                <template>
+                                    <span draggable="true" class="body-1">[[item.ID_FID]]</span>
+                                </template>
+                            </vaadin-grid-column>
+                            <vaadin-grid-column width="80px" flex-grow="0">
+                                <template class="header">
+                                    <vaadin-grid-sorter path="CIS_FID">
+                                        <span class="body-1" stlye="color:#424242;font-weight:400;">CIS_FID</span>
+                                    </vaadin-grid-sorter>
+                                </template>
+                                <template>
+                                    <span draggable="true" class="body-1">[[item.CIS_FID]]</span>
+                                </template>
+                            </vaadin-grid-column>
+                            <vaadin-grid-column width="73px" flex-grow="0">
+                                <template class="header">
+                                    <vaadin-grid-sorter path="ORG_CURRENT">
+                                        <span class="body-1" stlye="color:#424242;font-weight:400;">ORG</span>
+                                    </vaadin-grid-sorter>
+                                </template>
+                                <template>
+                                    <span draggable="true" class="body-1">[[item.ORG_CURRENT]]</span>
+                                </template>
+                            </vaadin-grid-column>
+                        </vaadin-grid-column-group>
+                        <vaadin-grid-column-group>
+                            <template class="header"><span class="body-1" stlye="color:#212121;font-weight:400;">Austrittsart</span></template>
+                            <vaadin-grid-column width="73px" flex-grow="0">
+                                <template class="header">
+                                    <vaadin-grid-sorter path="AUSTRITT_TYP">
+                                        <span class="body-1" stlye="color:#424242;font-weight:400;">Typ</span>
+                                    </vaadin-grid-sorter>
+                                </template>
+                                <template>
+                                    <span draggable="true" class="body-1">[[item.AUSTRITT_TYP]]</span>
+                                </template>
+                            </vaadin-grid-column>
+                            <vaadin-grid-column flex-grow="1">
+                                <template class="header">
+                                    <vaadin-grid-sorter path="STATISTIK_KANTON_AUSTRITTSART">
+                                        <span class="body-1" stlye="color:#424242;font-weight:400;">Bezeichnung</span>
+                                    </vaadin-grid-sorter>
+                                </template>
+                                <template>
+                                    <span draggable="true" class="body-1">[[item.STATISTIK_KANTON_AUSTRITTSART]]</span>
+                                </template>
+                            </vaadin-grid-column>
+                        </vaadin-grid-column-group>
+
+                        <vaadin-grid-column-group>
+                            <template class="header"><span class="body-1" stlye="color:#212121;font-weight:400;">Weiterbehandlung</span></template>
+                            <vaadin-grid-column width="73px" flex-grow="0">
+                                <template class="header">
+                                    <vaadin-grid-sorter path="WEITERBEHANDLUNG_TYP">
+                                        <span class="body-1" stlye="color:#424242;font-weight:400;">Typ</span>
+                                    </vaadin-grid-sorter>
+                                </template>
+                                <template>
+                                    <span draggable="true" class="body-1">[[item.WEITERBEHANDLUNG_TYP]]</span>
+                                </template>
+                            </vaadin-grid-column>
+                            <vaadin-grid-column flex-grow="1">
+                                <template class="header">
+                                    <vaadin-grid-sorter path="STATISTIK_KANTON_WEITERBEH">
+                                        <span class="body-1" stlye="color:#424242;font-weight:400;">Bezeichnung</span>
+                                    </vaadin-grid-sorter>
+                                </template>
+                                <template>
+                                    <span draggable="true" class="body-1">[[item.STATISTIK_KANTON_WEITERBEH]]</span>
+                                </template>
+                            </vaadin-grid-column>
+                        </vaadin-grid-column-group>
+
+
+                        <vaadin-grid-column-group>
+                            <template class="header"><span class="body-1" stlye="color:#212121;font-weight:400;">Wohnsituation</span></template>
+                            <vaadin-grid-column width="73px" flex-grow="0">
+                                <template class="header">
+                                    <vaadin-grid-sorter path="WOHNSITUATION_TYP">
+                                        <span class="body-1" stlye="color:#424242;font-weight:400;">Typ</span>
+                                    </vaadin-grid-sorter>
+                                </template>
+                                <template>
+                                    <span draggable="true" class="body-1">[[item.WOHNSITUATION_TYP]]</span>
+                                </template>
+                            </vaadin-grid-column>
+                            <vaadin-grid-column flex-grow="1">
+                                <template class="header">
+                                    <vaadin-grid-sorter path="STATISTIK_KANTON_WOHNSITUATION">
+                                        <span class="body-1" stlye="color:#424242;font-weight:400;">Bezeichnung</span>
+                                    </vaadin-grid-sorter>
+                                </template>
+                                <template>
+                                    <span draggable="true" class="body-1">[[item.STATISTIK_KANTON_WOHNSITUATION]]</span>
+                                </template>
+                            </vaadin-grid-column>
+                        </vaadin-grid-column-group>
+                    </vaadin-grid>
+
+
+                </div>
+            </div>
+        </template>
+        <template is="dom-if" if="[[!_d.init_done]]">
+            <optinomic-indication sign=":" title="Initialisiere..." color="#3F51B5"></optinomic-indication>
+        </template>
+    </template>
+    <script>
+    Polymer({
+        is: 'optinomic-template',
+
+        properties: {
+
+            _assessment_info: {
+                type: Object,
+                statePath: 'patient.data.assessment'
+            },
+
+            _annotations: {
+                type: Object,
+                statePath: '_app_annotations.data'
+            },
+
+        },
+
+        behaviors: [ReduxBehavior, AsyncActionsBehavior],
+
+
+        // -----------------------------
+        // Functions
+        // -----------------------------
+
+        _init: function() {
+
+            var d = {};
+
+            d.title = "Kantonsstatistik";
+            d.subtitle = "Angaben für die Kantonsstatistik";
+            d.small = "Polypoint";
+
+
+            d.init_done = true;
+            this.set('_d', d);
+            this._d = d;
+            console.log('INIT _d', this._d);
+
+        },
+
+
+
+        _buildPDF: function() {
+
+            this.debounce('_buildPDF', function() {
+
+
+
+                // ------------------------------
+                // Create PDF
+                // ------------------------------
+
+                var do_build = function() {
+
+
+                    // ------------------------------------------
+                    // Init
+                    // ------------------------------------------
+                    this._pdf_content = null;
+                    var _pdf_content = [];
+                    var d = this.get('_d');
+
+                    var date = new Date();
+                    var iso_date = date.toISOString();
+
+                    var credentials = {
+                        table: {
+                            widths: [60, "*"],
+                            body: [
+                                [{ text: "Login", color: "grey", margin: [0, 6, 0, 6] }, { text: this._current_patient.assessment.login_pid, fontSize: 16, margin: [0, 6, 0, 6] }],
+                                [{ text: "Passwort", color: "grey", margin: [0, 6, 0, 6] }, { text: this._current_patient.assessment.login_pw, fontSize: 16, margin: [0, 6, 0, 6] }]
+                            ]
+                        },
+                        layout: "noBorders"
+                    };
+
+
+
+                    // ------------------------------------------
+                    // Einladung Assessment
+                    // ------------------------------------------
+                    _pdf_content.push(this._suedhang_logo_anschrift());
+                    _pdf_content.push(this._title(d.docs[0].name, this._current_patient.extras.full_name));
+
+                    _pdf_content.push(this._text(d.docs[0].source.text_1));
+                    _pdf_content.push(this._text(d.docs[0].source.text_2));
+                    _pdf_content.push(this._text(d.docs[0].source.text_3));
+                    _pdf_content.push(this._text(d.docs[0].source.text_4));
+
+                    _pdf_content.push(this._horizontalLine(62, "#F5F5F5"));
+                    _pdf_content.push(this._heading("Persönliche Zugangsdaten", null, "h1"));
+                    _pdf_content.push(credentials);
+                    _pdf_content.push(this._horizontalLine(62, "#F5F5F5"));
+
+
+                    // --------------------------
+                    // Store
+                    // --------------------------
+                    this._pdf_content = _pdf_content;
+                    this._d.docs[0].content = _pdf_content;
+
+
+                    // ----------------------------------
+                    // Notizen
+                    // ----------------------------------
+                    var content_1 = []
+                    content_1.push(this._text(this._formatDateCH(iso_date)));
+
+                    var vertical_line = {
+                        "margin": [0, 0, 0, 0],
+                        "canvas": [{
+                            "type": "line",
+                            "x1": 85,
+                            "y1": 0,
+                            "x2": 85,
+                            "y2": 720,
+                            "lineWidth": 0.5,
+                            "lineColor": "#BDBDBD"
+                        }]
+                    };
+                    content_1.push(vertical_line);
+                    this._d.docs[1].content = content_1;
+
+
+                    // ----------------------------------
+                    // FIRE READY
+                    // ----------------------------------
+                    this.set('_pdf_ready', true);
+                    this.fire('pdfready', _pdf_content);
+
+                    console.log('(PDF | Ready) Druckvorlage: ', this._pdf_content);
+
+                    // Open "Collapse" when ready | Only in "Master-Document".
+                    setTimeout(function() {
+                        this.__toggle_print();
+                    }.bind(this), 50);
+                }.bind(this);
+
+
+                if ((this._assessment_info !== null) && (this._assessment_info !== undefined)) {
+                    do_build();
+                };
+            }, 250);
+        },
+
+
+        // -----------------------------
+        // User-Click Functions
+        // -----------------------------
+
+        __toggle_print: function() {
+            var print_button = this.$$('#collapse_print');
+            if ((print_button !== null) && (print_button !== undefined)) {
+                print_button.toggle();
+            };
+        },
+
+        __scroll_target: function(e) {
+            var model = e.model.get('item');
+            console.log('(SCROLL)', model);
+            var target = this.$$('#' + model.anchor);
+            target.scrollIntoView();
+        },
+
+        __scroll_top: function() {
+            var top = this.$$('#top');
+            console.log('(SCROLL) top');
+            top.scrollIntoView();
+        },
+
+
+        // -----------------------------
+        // Lifecycle
+        // -----------------------------
+
+        _loadData: function() {
+            this.dispatch('getModuleAnnotations', 'com.optinomic.user.apps.poly_ks');
+        },
+
+        ready: function() {
+            this._loadData();
+            this._init();
+        }
+    });
+    </script>
+</dom-module>
