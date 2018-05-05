@@ -70,7 +70,7 @@ function callODBC() {
 
     return new Promise(function(resolve, reject) {
 
-        var sql = __opapp_include_as_js_string(includes/odbc_kantonsstatistik_typ.sql);
+        var sql = __opapp_include_as_js_string(../includes/odbc_kantonsstatistik_typ.sql);
 
         var body = {
             "query": sql,
